@@ -16,7 +16,7 @@ module.exports = function(controller) {
         bot.startConversation(message, function(err, convo) {
             convo.say('This is an example of using convo.ask with a single callback.');
 
-            convo.ask('What is your favorite color?', function(response, convo) {
+            convo.ask('What is your god damn favorite color?', function(response, convo) {
 
                 convo.say('Cool, I like ' + response.text + ' too!');
                 convo.next();
@@ -26,7 +26,7 @@ module.exports = function(controller) {
 
     });
   
-  controller.hears(['update'], ['update website'], 'direct_message,direct_mention', function(bot, message) {
+  controller.hears(['web'], ['update website'], 'direct_message,direct_mention', function(bot, message) {
 
         bot.startConversation(message, function(err, convo) {
             convo.say('You would like to update the website? Please enter in the following format: '
@@ -39,12 +39,12 @@ module.exports = function(controller) {
           
           // send update to NJ channel (or send this update from website itself? - probs)
 
-            convo.ask('What is your favorite color?', function(response, convo) {
+//             convo.ask('What is your favorite color?', function(response, convo) {
 
-                convo.say('Cool, I like ' + response.text + ' too!');
-                convo.next();
+//                 convo.say('Cool, I like ' + response.text + ' too!');
+//                 convo.next();
 
-            });
+//             });
         });
 
     });
