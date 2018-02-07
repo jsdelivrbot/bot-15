@@ -26,25 +26,9 @@ module.exports = function(controller) {
 
     });
   
-  controller.hears(['web', 'update'], 'direct_message,direct_mention', function(bot, message) {
 
-        bot.startConversation(message, function(err, convo) {
-            
-            convo.ask('You would like to update the website? Please enter in the following format: '
-                      + 'update module: (your module), title: (your title), text: (your text - keep it brief), '     
-                      + 'link: (your http link)');
-          
-          convo.next();
-          
-          // wait for response
-          
-          // return website updated message, success
-          
-          // send update to NJ channel (or send this update from website itself? - probs)
-
-        });
-
-    });
+  
+  
 
 
     controller.hears(['question'], 'direct_message,direct_mention', function(bot, message) {
@@ -109,4 +93,55 @@ module.exports = function(controller) {
 
     });
 
+  
+  
+    /* 
+  Marina 
+  */
+  
+  controller.hears(['update help', 'website help', 'website update help', 'update website help'], 'direct_message,direct_mention', function(bot, message) {
+
+        bot.startConversation(message, function(err, convo) {
+            
+            convo.say('You would like to update the website?\n' 
+                      + ' Please enter a command in the following format: \n'
+                      + 'update module: <your module>, title: <your title>, text: <your text - keep it brief>, '     
+                      + 'link: <your http link>');
+          
+          
+            convo.next();
+          
+          // wait for response
+          
+          // return website updated message, success
+          
+          // send update to NJ channel (or send this update from website itself? - probs)
+
+        });
+
+    });
+  
+  controller.hears(['update help', 'website help', 'website update help', 'update website help'], 'direct_message,direct_mention', function(bot, message) {
+
+        bot.startConversation(message, function(err, convo) {
+            
+            convo.say('You would like to update the website?\n' 
+                      + ' Please enter a command in the following format: \n'
+                      + 'update module: <your module>, title: <your title>, text: <your text - keep it brief>, '     
+                      + 'link: <your http link>');
+          
+          
+            convo.next();
+          
+          // wait for response
+          
+          // return website updated message, success
+          
+          // send update to NJ channel (or send this update from website itself? - probs)
+
+        });
+
+    });
+  
+  
 };
