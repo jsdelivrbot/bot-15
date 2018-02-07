@@ -104,34 +104,34 @@ module.exports = function(controller) {
         bot.startConversation(message, function(err, convo) {
             
             convo.say('You would like to update the website?\n' 
-                      + ' Please enter a command in the following format: \n'
+                      + 'Type update in Slack\n'
+                      + ' Then enter a command in the following format: \n'
                       + 'update module: <your module>, title: <your title>, text: <your text - keep it brief>, '     
                       + 'link: <your http link>');
           
           
             convo.next();
-          
-          // wait for response
-          
-          // return website updated message, success
-          
-          // send update to NJ channel (or send this update from website itself? - probs)
+            
+        
 
         });
 
     });
   
-  controller.hears(['update help', 'website help', 'website update help', 'update website help'], 'direct_message,direct_mention', function(bot, message) {
+  controller.hears(['update'], 'direct_message,direct_mention', function(bot, message) {
 
         bot.startConversation(message, function(err, convo) {
             
-            convo.say('You would like to update the website?\n' 
-                      + ' Please enter a command in the following format: \n'
-                      + 'update module: <your module>, title: <your title>, text: <your text - keep it brief>, '     
-                      + 'link: <your http link>');
+            //convo.say('Tell me what you would like me to update');
           
+            convo.ask('What would you like me to update?', function(response, convo) {
+
+                convo.say('Cool, I will update ' + response.text + '!');
+                convo.next();
+
+            });
           
-            convo.next();
+            //convo.next();
           
           // wait for response
           
