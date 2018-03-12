@@ -1,0 +1,342 @@
+/*
+AUTHOR:
+
+@marinamcculloch
+
+FUNCTIONALITY:
+
+Updates the posts and announcement on the info page
+
+ */
+
+var fb = require("../../../onboardapp/app/fb.js");
+
+var db = fb.db;
+
+var postTitle;
+var postDescription;
+
+var name;
+var url;
+
+module.exports = function(controller) {
+
+
+        /*
+     Slack User can ask the bot for help regarding an update
+      */
+
+    controller.hears(['update info help','info help', 'info format', 'format info'], 'direct_message,direct_mention', function(bot, message) {
+
+        bot.startConversation(message, function(err, convo) {
+
+            convo.say('You would like to update one of the info posts?\n'
+                + 'Type update info page in Slack\n'
+                + ' Then enter a command in the following format: \n'
+                + 'title: <your title>/ description: <your description> ');
+            convo.next();
+
+        });
+
+    });
+
+    controller.hears(['update you should know help', 'you should know help', 'you should know format'], 'direct_message,direct_mention', function(bot, message) {
+
+        bot.startConversation(message, function(err, convo) {
+
+            convo.say('You would like to update the You Should Know module?\n'
+                + 'Type update ysk in Slack\n'
+                + ' Then enter the update in Slack \n'
+                + '(Keep to a few lines)');
+
+            convo.next();
+        });
+
+    });
+
+
+    /*
+    Slack User chat with bot
+    User says update post and Slack bot formats the message, asks which post to update and updates firebase
+     */
+    controller.hears(['update info page'], 'direct_message,direct_mention', function(bot, message) {
+
+        bot.startConversation(message, function(err, convo) {
+
+            convo.ask('Please type out the info update in the correct format', function(response, convo) {
+
+                var slashSplitResponse = response.text.split('/');
+
+                var formattedString = response.text.split('/').join("\n")
+
+                formatPostSlackMessage(slashSplitResponse);
+
+                convo.ask('Cool, update with the following changes? Please say yes or no \n ' + formattedString, function(response, convo) {
+
+                    var confirmResponse = response.text.valueOf();
+
+                    if (confirmResponse == 'yes') {
+
+                        convo.ask('Which info module you would like to update? Please say module one, two, three, four or five \n ', function(response, convo) {
+
+                            var postResponse = response.text.valueOf();
+
+                            if (postResponse == 'module one') {
+                                convo.say("Confirmed! Updating.. ");
+                                convo.next();
+                                writeModuleOneData(postTitle, postDescription);
+                            } else if (postResponse == 'module two') {
+                                convo.say("Confirmed! Updating.. ");
+                                convo.next();
+                                writeModuleTwoData(postTitle, postDescription);
+                            } else if (postResponse == 'module three') {
+                                convo.say("Confirmed! Updating.. ");
+                                convo.next();
+                                writeModuleThreeData(postTitle, postDescription);
+                            } else if (postResponse == 'module four') {
+                                convo.say("Confirmed! Updating.. ");
+                                convo.next();
+                                writeModuleFourData(postTitle, postDescription);
+                            } else if (postResponse == 'module five') {
+                                convo.say("Confirmed! Updating.. ");
+                                convo.next();
+                                writeModuleFiveData(postTitle, postDescription);
+                            } else {
+                                convo.say("Sorry, I didn't get that. Task destroyed.");
+                                convo.next();
+                            }
+                        });
+
+                        convo.next();
+                    } else if (confirmResponse == 'no') {
+                        console.log('client said no');
+                        convo.say("Task destroyed");
+                        convo.next();
+                    } else {
+                        convo.say("Sorry, I didn't get that. Task destroyed.");
+                        convo.next();
+                    }
+
+                });
+
+                convo.next();
+            });
+
+        });
+
+    });
+
+
+    /*
+    Slack User chat with bot
+    User says update front main and Slack bot formats the message
+     */
+    controller.hears(['update ysk'], 'direct_message,direct_mention', function(bot, message) {
+
+        bot.startConversation(message, function(err, convo) {
+
+            convo.ask('What would you like me to update the You Should Know module to?', function(response, convo) {
+
+                var responseString = response.text;
+
+                convo.ask('Cool, update with the following changes? Please say yes or no \n ' + responseString, function(response, convo) {
+
+                    var confirmResponse = response.text.valueOf();
+                    console.log('response string ' + responseString);
+
+                    if (confirmResponse == 'yes') {
+                        convo.say("Confirmed! Updating.. ");
+                        convo.next();
+                        writeInfoYSK(responseString);
+                    } else if (confirmResponse == 'no') {
+                        console.log('client said no');
+                        convo.say("Task destroyed");
+                        convo.next();
+                    } else {
+                        convo.say("Sorry, I didn't get that. Task destroyed.");
+                        convo.next();
+                    }
+                });
+                convo.next();
+
+            });
+
+        });
+
+    });
+
+    /*
+    Slack - Ask to add Link
+     */
+
+    controller.hears(['add link to info page'], 'direct_message,direct_mention', function(bot, message) {
+
+        bot.startConversation(message, function(err, convo) {
+
+            convo.ask('Type in name: (Capgemini Website), http url: (http://www.capgemini.com)', function(response, convo) {
+
+                var commaSplitResponse = response.text.split(',');
+
+                formatLinkSlackMessage(commaSplitResponse);
+
+                convo.ask('Cool, update with the following changes? Please say yes or no \n ' + commaSplitResponse, function(response, convo) {
+
+                    var confirmResponse = response.text.valueOf();
+
+                    if (confirmResponse == 'yes') {
+                        convo.say("Confirmed! Updating.. ");
+                        convo.next();
+                        addLinkToInfoPage(name, url);
+                    } else if (confirmResponse == 'no') {
+                        console.log('client said no');
+                        convo.say("Task destroyed");
+                        convo.next();
+                    } else {
+                        convo.say("Sorry, I didn't get that. Task destroyed.");
+                        convo.next();
+                    }
+                });
+                convo.next();
+
+            });
+
+        });
+
+    });
+
+
+
+
+
+
+
+}
+
+function formatLinkSlackMessage(message) {
+    //title
+    var linkName = message[0];
+    var linkToString = linkName.toString();
+    var nameAndValue = linkToString.split(': ');
+    name = nameAndValue[1];
+
+    //subtitle
+    var linkUrl = message[1];
+    var linkUrlToString = linkUrl.toString();
+    var urlAndValue = linkUrlToString.split(': ');
+    url = urlAndValue[1];
+}
+
+/*
+This function formats an incoming Slack message by
+separating the message into 4 parts "Title, SubTitle, Paragraph 1 - 4"
+ */
+function formatPostSlackMessage(message) {
+    //title
+    var title = message[0];
+    var titleToString = title.toString();
+    var titleAndValue = titleToString.split(': ');
+    postTitle = titleAndValue[1];
+
+    //description
+    var subtitle = message[1];
+    var subtitleToString = subtitle.toString();
+    var subtitleAndValue = subtitleToString.split(': ');
+    postDescription = subtitleAndValue[1];
+}
+
+function writeModuleOneData(title, description) {
+
+    var ref = db.ref("info_page").child('info_one');
+
+    ref.once("value", function(snapshot) {
+        console.log(snapshot.val());
+    });
+
+    ref.update({
+        title: title,
+        description: description
+    });
+}
+
+function writeModuleTwoData(title, description) {
+
+    var ref = db.ref("info_page").child('info_two');
+
+    ref.once("value", function(snapshot) {
+        console.log(snapshot.val());
+    });
+
+    ref.update({
+        title: title,
+        description: description
+    });
+}
+
+function writeModuleThreeData(title, description) {
+
+    var ref = db.ref("info_page").child('info_three');
+
+    ref.once("value", function(snapshot) {
+        console.log(snapshot.val());
+    });
+
+    ref.update({
+        title: title,
+        description: description
+    });
+}
+
+function writeModuleFourData(title, description) {
+
+    var ref = db.ref("info_page").child('info_four');
+
+    ref.once("value", function(snapshot) {
+        console.log(snapshot.val());
+    });
+
+    ref.update({
+        title: title,
+        description: description
+    });
+}
+
+function writeModuleFiveData(title, description) {
+
+    var ref = db.ref("info_page").child('info_five');
+
+    ref.once("value", function(snapshot) {
+        console.log(snapshot.val());
+    });
+
+    ref.update({
+        title: title,
+        description: description
+    });
+}
+
+function writeInfoYSK(ysk) {
+
+    var ref = db.ref("info_page").child('side_module');
+
+    ref.once("value", function(snapshot) {
+        console.log(snapshot.val());
+    });
+
+    ref.update({
+        description: ysk
+    });
+}
+
+/**
+ * Function to add new link to database
+ * */
+function addLinkToInfoPage(name, url) {
+
+    var ref = db.ref("info_links");
+
+    ref.push().set({
+        name : name,
+        url : url
+    });
+
+}
